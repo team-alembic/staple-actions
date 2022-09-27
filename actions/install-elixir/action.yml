@@ -2,7 +2,7 @@ name: Install Elixir and Erlang
 runs:
   using: "composite"
   steps:
-    - uses: ./.github/./actions/tool-versions
+    - uses: team-alembic/staple-actions/actions/tool-versions@main
       id: tool-versions
     - uses: erlef/setup-beam@v1
       with:
