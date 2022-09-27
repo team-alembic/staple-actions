@@ -1,0 +1,10 @@
+name: Install Elixir and Erlang
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/./actions/tool-versions
+      id: tool-versions
+    - uses: erlef/setup-beam@v1
+      with:
+        otp-version: ${{ steps.tool-versions.outputs.erlang }}
+        elixir-version: ${{ steps.tool-versions.outputs.elixir }}

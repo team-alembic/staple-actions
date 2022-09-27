@@ -1,0 +1,15 @@
+name: Get ASDF tool versions
+outputs:
+  erlang:
+    value: ${{ steps.erlang.outputs.version }}
+  elixir:
+    value: ${{ steps.elixir.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - id: erlang
+      run: echo "::set-output name=version::$(grep erlang .tool-versions | cut -d ' ' -f 2)"
+      shell: bash
+    - id: elixir
+      run: echo "::set-output name=version::$(grep elixir .tool-versions | cut -d ' ' -f 2)"
+      shell: bash

@@ -1,0 +1,25 @@
+name: Deploy to Gigalixir.
+inputs:
+  gigalixir-email:
+    required: true
+  gigalixir-password:
+    required: true
+  gigalixir-app-name:
+    required: true
+  run-migrations:
+    required: true
+    default: 'true'
+runs:
+  using: "composite"
+  steps:
+    - run: sudo pip install gigalixir --ignore-installed six
+      shell: bash
+    - run: gigalixir login -e "${{ inputs.gigalixir-email }}" -y -p "${{ inputs.gigalixir-password }}"
+      shell: bash
+    - run: gigalixir git:remote ${{ inputs.gigalixir-app-name }}
+      shell: bash
+    - run: git push -f gigalixir HEAD:refs/heads/main
+      shell: bash
+    - run: gigalixir run mix ecto.migrate
+      if: ${{ inputs.run-migrations == 'true' }}
+      shell: bash

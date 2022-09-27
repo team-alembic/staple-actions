@@ -1,0 +1,25 @@
+name: mix deps.get
+inputs:
+  git-token:
+    required: false
+    default: ${{ github.token }}
+    description: "A Github access token for checking out git-based dependencies."
+runs:
+  using: "composite"
+  steps:
+    - name: Configure git access
+      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      shell: bash
+    - name: Retrieve Mix Dependencies Cache
+      uses: actions/cache@v1
+      id: mix-cache
+      with:
+        path: deps
+        key: deps-${{ runner.os }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+        restore-keys: |
+          deps-${{ runner.os }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-
+          deps-${{ runner.os }}-
+    - name: Install Mix Dependencies
+      shell: bash
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      run: mix deps.get

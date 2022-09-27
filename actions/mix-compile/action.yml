@@ -1,0 +1,20 @@
+name: mix compile
+inputs:
+  mix-env:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Retrieve Build Cache
+      uses: actions/cache@v1
+      id: build-cache
+      with:
+        path: _build
+        key: build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+        restore-keys: |
+          build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-
+          build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}
+    - run: mix compile
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
