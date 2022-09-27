@@ -9,10 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
 
   auditor:
     name: mix hex.audit
@@ -20,10 +18,8 @@ jobs:
     needs: deps
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
       - run: mix hex.audit
 
   build-test:
@@ -32,11 +28,9 @@ jobs:
     needs: deps
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: test
 
@@ -48,15 +42,12 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
       - run: mix format --check-formatted
-
 
   credo:
     name: mix credo --strict
@@ -66,11 +57,9 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
       - run: mix credo --strict
@@ -83,11 +72,9 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
       - run: mix doctor --full --raise
@@ -112,11 +99,9 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
       - run: mix test
@@ -134,12 +119,12 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
-      - uses: ./.github/actions/mix-dialyzer-plt
+      - uses: team-alembic/staple-actions/actions/mix-dialyzer-plt
         with:
           mix-env: ${{ env.MIX_ENV }}
       - run: mix dialyzer --format github
@@ -157,11 +142,9 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: dev
 
@@ -173,11 +156,9 @@ jobs:
       MIX_ENV: dev
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
       - run: mix docs
@@ -210,14 +191,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/install-elixir
-      - uses: ./.github/actions/mix-deps-get
-        with:
-          git-token: ${{ secrets.JIMSY_ACCESS_TOKEN }}
-      - uses: ./.github/actions/mix-compile
+      - uses: team-alembic/staple-actions/actions/install-elixir
+      - uses: team-alembic/staple-actions/actions/mix-deps-get
+      - uses: team-alembic/staple-actions/actions/mix-compile
         with:
           mix-env: ${{ env.MIX_ENV }}
-      - uses: ./.github/actions/git-ops
+      - uses: team-alembic/staple-actions/actions/git-ops
 
   deploy-gigalixir:
     name: gigalixir deploy
@@ -231,13 +210,13 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://playdate.alembic.com.au/
+      url: ${{ secrets.PRODUCTION_URL }}
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v1
-      - uses: ./.github/actions/gigalixir-deploy
+      - uses: team-alembic/staple-actions/actions/gigalixir-deploy
         with:
           gigalixir-email: ${{ secrets.GIGALIXIR_EMAIL }}
           gigalixir-password: ${{ secrets.GIGALIXIR_PASSWORD }}
           gigalixir-app-name: ${{ secrets.GIGALIXIR_APP_NAME }}
-          run-migrations: 'true'
+          run-migrations: "true"
