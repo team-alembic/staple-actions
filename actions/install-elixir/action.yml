@@ -1,9 +1,17 @@
 name: Install Elixir and Erlang
+description: "Install Erlang and Elixir as per the `.tool-versions` file."
+inputs:
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
 runs:
   using: "composite"
   steps:
     - uses: team-alembic/staple-actions/actions/tool-versions@main
       id: tool-versions
+      with:
+        working-directory: "${{ inputs.working-directory }}"
     - uses: erlef/setup-beam@v1
       with:
         otp-version: ${{ steps.tool-versions.outputs.erlang }}

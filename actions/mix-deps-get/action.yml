@@ -1,25 +1,31 @@
 name: mix deps.get
+description: "Download and install the hex dependencies (with cache)"
 inputs:
   git-token:
     required: false
     default: ${{ github.token }}
     description: "A Github access token for checking out git-based dependencies."
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
 runs:
   using: "composite"
   steps:
     - name: Configure git access
       run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - name: Retrieve Mix Dependencies Cache
       uses: actions/cache@v1
       id: mix-cache
       with:
-        path: deps
-        key: deps-${{ runner.os }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+        path: ${{ inputs.working-directory }}/deps
+        key: deps-${{ runner.os }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
         restore-keys: |
-          deps-${{ runner.os }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-
+          deps-${{ runner.os }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-
           deps-${{ runner.os }}-
     - name: Install Mix Dependencies
       shell: bash
-      if: steps.mix-cache.outputs.cache-hit != 'true'
       run: mix deps.get
+      working-directory: "${{ inputs.working-directory }}"

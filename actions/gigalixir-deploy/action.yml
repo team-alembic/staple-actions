@@ -1,25 +1,39 @@
 name: Deploy to Gigalixir.
+description: "Deploy to Gigalixir"
 inputs:
   gigalixir-email:
+    description: "The email address of the Gigalixir account holder"
     required: true
   gigalixir-password:
+    description: "The password of the Gigalixir account holder"
     required: true
   gigalixir-app-name:
+    description: "The name of the Gigalixir application"
     required: true
   run-migrations:
+    description: "Whether to run migrations after a successful deployment"
     required: true
-    default: 'true'
+    default: "true"
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
 runs:
   using: "composite"
   steps:
     - run: sudo pip install gigalixir --ignore-installed six
       shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - run: gigalixir login -e "${{ inputs.gigalixir-email }}" -y -p "${{ inputs.gigalixir-password }}"
       shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - run: gigalixir git:remote ${{ inputs.gigalixir-app-name }}
       shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - run: git push -f gigalixir HEAD:refs/heads/main
       shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - run: gigalixir run mix ecto.migrate
       if: ${{ inputs.run-migrations == 'true' }}
       shell: bash
+      working-directory: "${{ inputs.working-directory }}"

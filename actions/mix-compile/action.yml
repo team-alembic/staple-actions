@@ -1,7 +1,13 @@
 name: mix compile
+description: "Run `mix compile` with a build cache"
 inputs:
   mix-env:
+    description: "The Mix environment to compile within"
     required: true
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
 runs:
   using: "composite"
   steps:
@@ -9,12 +15,13 @@ runs:
       uses: actions/cache@v1
       id: build-cache
       with:
-        path: _build
-        key: build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+        path: "${{ inputs.working-directory}}/_build"
+        key: build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
         restore-keys: |
-          build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', github.workspace, '/.tool-versions')) }}-
+          build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-
           build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}
     - run: mix compile
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
+      working-directory: "${{ inputs.working-directory }}"
