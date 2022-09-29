@@ -19,6 +19,10 @@ inputs:
     description: "The prefix to place before the version number in the tag name"
     required: false
     default: "v"
+  mix-env:
+    description: "The Mix environment to compile within"
+    required: false
+    default: "dev"
 runs:
   using: "composite"
   steps:
@@ -29,14 +33,20 @@ runs:
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.project_info --format github-actions
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
       name: Retrieving original app version.
       id: original-app-info
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.release --yes || true
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.project_info --format github-actions
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
       name: Checking for new app version.
       id: new-app-info
       shell: bash
