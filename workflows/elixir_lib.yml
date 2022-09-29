@@ -3,17 +3,12 @@ name: Elixir Library
 on:
   push:
 
-env:
-  HEX_HOME: ${{ runner.temp }}/.hex
-  MIX_HOME: ${{ runner.temp }}/.mix
-
 jobs:
   deps:
     name: mix deps.get
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
       - uses: team-alembic/staple-actions/actions/mix-deps-get@main
 
   auditor:
@@ -22,9 +17,7 @@ jobs:
     needs: deps
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - run: mix hex.audit
+      - uses: team-alembic/staple-actions/actions/mix-hex-audit@main
 
   build-test:
     name: MIX_ENV=test mix.compile
@@ -32,8 +25,6 @@ jobs:
     needs: deps
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
       - uses: team-alembic/staple-actions/actions/mix-compile@main
         with:
           mix-env: test
@@ -41,80 +32,52 @@ jobs:
   formatter:
     name: mix format --check-formatted
     runs-on: ubuntu-latest
-    env:
-      MIX_ENV: test
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
+      - uses: team-alembic/staple-actions/actions/mix-format@main
         with:
-          mix-env: ${{ env.MIX_ENV }}
-      - run: mix format --check-formatted
+          mix-env: test
 
   credo:
     name: mix credo --strict
     runs-on: ubuntu-latest
-    env:
-      MIX_ENV: test
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
+      - uses: team-alembic/staple-actions/actions/mix-credo@main
         with:
-          mix-env: ${{ env.MIX_ENV }}
-      - run: mix credo --strict
+          mix-env: test
 
   doctor:
     name: mix doctor --full --raise
     runs-on: ubuntu-latest
-    env:
-      MIX_ENV: test
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
+      - uses: team-alembic/staple-actions/actions/mix-doctor@main
         with:
-          mix-env: ${{ env.MIX_ENV }}
-      - run: mix doctor --full --raise
+          mix-env: test
 
   test:
     name: mix test
     runs-on: ubuntu-latest
-    env:
-      MIX_ENV: test
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
+      - uses: team-alembic/staple-actions/actions/mix-test@main
         with:
-          mix-env: ${{ env.MIX_ENV }}
-      - run: mix test
+          mix-env: test
 
   dialyzer:
     name: mix dialyzer
     runs-on: ubuntu-latest
-    env:
-      MIX_ENV: test
     needs: build-test
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
+      - uses: team-alembic/staple-actions/actions/mix-dialyzer@main
         with:
-          mix-env: ${{ env.MIX_ENV }}
-      - uses: team-alembic/staple-actions/actions/mix-dialyzer-plt@main
-        with:
-          mix-env: ${{ env.MIX_ENV }}
-      - run: mix dialyzer --format github
+          mix-env: test
 
   build-dev:
     name: MIX_ENV=dev mix.compile
@@ -129,8 +92,6 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
       - uses: team-alembic/staple-actions/actions/mix-compile@main
         with:
           mix-env: dev
@@ -139,16 +100,11 @@ jobs:
     name: mix docs
     runs-on: ubuntu-latest
     needs: build-dev
-    env:
-      MIX_ENV: dev
     steps:
       - uses: actions/checkout@v3
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
+      - uses: team-alembic/staple-actions/actions/mix-docs@main
         with:
-          mix-env: ${{ env.MIX_ENV }}
-      - run: mix docs
+          mix-env: dev
       - uses: actions/upload-pages-artifact@v1
         with:
           path: doc/
@@ -172,15 +128,10 @@ jobs:
     name: mix git-ops.release
     runs-on: ubuntu-latest
     needs: build-dev
-    env:
-      MIX_ENV: dev
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: team-alembic/staple-actions/actions/install-elixir@main
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
-      - uses: team-alembic/staple-actions/actions/mix-compile@main
-        with:
-          mix-env: ${{ env.MIX_ENV }}
       - uses: team-alembic/staple-actions/actions/git-ops@main
+        with:
+          mix-env: dev
