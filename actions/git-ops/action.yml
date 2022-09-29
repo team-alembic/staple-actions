@@ -23,9 +23,28 @@ inputs:
     description: "The Mix environment to compile within"
     required: false
     default: "dev"
+  git-token:
+    required: false
+    default: ${{ github.token }}
+    description: "A Github access token for checking out git-based dependencies."
+  use-cache:
+    description: "Use caches?"
+    required: false
+    default: "true"
+  cache-prefix:
+    description: "Optional prefix for the cache key"
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
+    - uses: team-alembic/staple-actions/actions/mix-compile@main
+      with:
+        mix-env: ${{ inputs.mix-env }}
+        git-token: ${{ inputs.git-token }}
+        working-directory: ${{ inputs.working-directory }}
+        use-cache: ${{ inputs.use-cache }}
+        cache-prefix: ${{ inputs.cache-prefix }}
     - run: git config user.email '${{ github.repository }}+github-actions[bot]@users.noreply.github.com'
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
@@ -35,6 +54,8 @@ runs:
     - run: mix git_ops.project_info --format github-actions
       env:
         MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
       name: Retrieving original app version.
       id: original-app-info
       shell: bash
@@ -42,11 +63,15 @@ runs:
     - run: mix git_ops.release --yes || true
       env:
         MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.project_info --format github-actions
       env:
         MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
       name: Checking for new app version.
       id: new-app-info
       shell: bash

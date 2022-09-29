@@ -10,7 +10,7 @@ inputs:
     required: false
     default: "${{ github.workspace }}"
   use-cache:
-    description: "Whether to cache the downloaded dependencies"
+    description: "Use caches?"
     required: false
     default: "true"
   cache-prefix:
@@ -20,6 +20,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install Erlang and Elixir
+      uses: team-alembic/staple-actions/actions/install-elixir@main
+      with:
+        working-directory: "${{ inputs.working-directory }}"
     - name: Configure git access
       run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       shell: bash

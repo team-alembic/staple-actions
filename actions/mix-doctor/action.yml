@@ -1,13 +1,13 @@
-name: mix compile
-description: "Run `mix compile` with a build cache"
+name: mix doctor --full --raise
+description: "Runs `mix doctor --full --raise`"
 inputs:
-  mix-env:
-    description: "The Mix environment to compile within"
-    required: true
   git-token:
     required: false
     default: ${{ github.token }}
     description: "A Github access token for checking out git-based dependencies."
+  mix-env:
+    description: "The Mix environment to compile within"
+    required: true
   working-directory:
     description: "Change the working directory that the commands are run within"
     required: false
@@ -23,20 +23,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: team-alembic/staple-actions/actions/mix-deps-get@main
+    - uses: team-alembic/staple-actions/actions/mix-compile@main
       with:
         git-token: ${{ inputs.git-token }}
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
-    - name: Retrieve Build Cache
-      uses: actions/cache@v1
-      id: build-cache
-      with:
-        path: "${{ inputs.working-directory }}/_build/${{ inputs.mix-env }}"
-        key: ${{ inputs.cache-prefix}}-build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-      if: ${{ inputs.use-cache == 'true' }}
-    - run: mix compile
+        mix-env: ${{ inputs.mix-env }}
+    - run: mix doctor --full --raise
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
