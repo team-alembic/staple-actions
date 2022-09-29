@@ -17,6 +17,14 @@ inputs:
     description: "Optional prefix for the cache key"
     required: false
     default: ""
+  hex-home:
+    description: "Where shared hex files are stored"
+    required: false
+    default: ${{ runner.temp }}/.hex
+  mix-home:
+    description: "Where shared mix files are stored"
+    required: false
+    default: ${{ runner.temp }}/.hex
 runs:
   using: "composite"
   steps:
@@ -27,12 +35,32 @@ runs:
     - name: Retrieve Mix Dependencies Cache
       uses: actions/cache@v1
       with:
-        path: ${{ inputs.working-directory }}/deps
+        path: |
+          ${{ inputs.working-directory }}/deps
+          ${{ inputs.hex-home }}
+          ${{ inputs.mix-home }}
         key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
         restore-keys: |
           ${{ inputs.cache-prefix }}-deps
       if: ${{ inputs.use-cache == 'true' }}
+    - name: Install Hex
+      shell: bash
+      run: mix local.hex --if-missing --force
+      env:
+        HEX_HOME: ${{ inputs.hex-home }}
+        MIX_HOME: ${{ inputs.mix-home }}
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Install Rebar
+      shell: bash
+      run: mix local.rebar --if-missing --force
+      env:
+        HEX_HOME: ${{ inputs.hex-home }}
+        MIX_HOME: ${{ inputs.mix-home }}
+      working-directory: "${{ inputs.working-directory }}"
     - name: Install Mix Dependencies
       shell: bash
       run: mix deps.get
+      env:
+        HEX_HOME: ${{ inputs.hex-home }}
+        MIX_HOME: ${{ inputs.mix-home }}
       working-directory: "${{ inputs.working-directory }}"

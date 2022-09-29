@@ -16,3 +16,5 @@ runs:
       with:
         otp-version: ${{ steps.tool-versions.outputs.erlang }}
         elixir-version: ${{ steps.tool-versions.outputs.elixir }}
+        install-rebar: false
+        install-hex: false
