@@ -33,7 +33,7 @@ runs:
       uses: actions/cache@v1
       id: build-cache
       with:
-        path: "${{ inputs.working-directory }}/_build/${{ inputs.mix-env }}"
+        path: "${{ inputs.working-directory }}/_build"
         key: ${{ inputs.cache-prefix}}-build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - run: mix compile

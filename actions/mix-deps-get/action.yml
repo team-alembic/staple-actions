@@ -24,10 +24,6 @@ runs:
       uses: team-alembic/staple-actions/actions/install-elixir@main
       with:
         working-directory: "${{ inputs.working-directory }}"
-    - name: Configure git access
-      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-      shell: bash
-      working-directory: "${{ inputs.working-directory }}"
     - name: Retrieve Mix Dependencies Cache
       uses: actions/cache@v1
       with:
@@ -39,6 +35,10 @@ runs:
         restore-keys: |
           ${{ inputs.cache-prefix }}-deps
       if: ${{ inputs.use-cache == 'true' }}
+    - name: Configure git access
+      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - name: Install Hex
       shell: bash
       run: mix local.hex --if-missing --force
