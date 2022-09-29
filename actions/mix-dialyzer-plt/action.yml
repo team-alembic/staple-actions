@@ -4,6 +4,10 @@ inputs:
   mix-env:
     description: "The mix environment to use"
     required: true
+  git-token:
+    required: false
+    default: ${{ github.token }}
+    description: "A Github access token for checking out git-based dependencies."
   working-directory:
     description: "Change the working directory that the commands are run within"
     required: false
@@ -23,6 +27,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: team-alembic/staple-actions/actions/mix-compile@main
+      with:
+        git-token: ${{ inputs.git-token }}
+        working-directory: ${{ inputs.working-directory }}
+        use-cache: ${{ inputs.use-cache }}
+        cache-prefix: ${{ inputs.cache-prefix }}
+        mix-env: ${{ inputs.mix-env }}
     - name: Retrieve PLT Cache
       uses: actions/cache@v1
       with:
