@@ -20,6 +20,10 @@ inputs:
     description: "Optional prefix for the cache key"
     required: false
     default: ""
+  plt-path:
+    description: "The path within the workspace where the PLT files should be stored"
+    required: false
+    default: "priv/plt"
 runs:
   using: "composite"
   steps:
