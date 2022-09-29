@@ -3,6 +3,10 @@ name: STAPLE
 on:
   push:
 
+env:
+  HEX_HOME: ${{ runner.temp }}/.hex
+  MIX_HOME: ${{ runner.temp }}/.mix
+
 jobs:
   deps:
     name: mix deps.get

@@ -33,5 +33,9 @@ runs:
       run: |
         mkdir -p ${{ inputs.plt-path }}
         mix dialyzer --plt
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
