@@ -23,7 +23,7 @@ inputs:
   plt-path:
     description: "The path within the workspace where the PLT files should be stored"
     required: false
-    default: "priv/plt"
+    default: "priv/plts"
 runs:
   using: "composite"
   steps:
@@ -34,6 +34,7 @@ runs:
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
         mix-env: ${{ inputs.mix-env }}
+        plt-path: ${{ inputs.plt-path }}
     - run: mix dialyzer --format github
       shell: bash
       env:
