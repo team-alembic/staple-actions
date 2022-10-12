@@ -15,7 +15,7 @@ inputs:
   plt-path:
     description: "The path within the workspace where the PLT files should be stored"
     required: false
-    default: "priv/plt"
+    default: "priv/plts"
   use-cache:
     description: "Use caches?"
     required: false
