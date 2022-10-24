@@ -1,0 +1,43 @@
+name: mix dialyzer --plt
+description: "Build the Dialyzer PLT cache (with cache)"
+inputs:
+  mix-env:
+    description: "The mix environment to use"
+    required: true
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+  plt-path:
+    description: "The path within the workspace where the PLT files should be stored"
+    required: false
+    default: "priv/plts"
+  use-cache:
+    description: "Use caches?"
+    required: false
+    default: "true"
+  cache-prefix:
+    description: "Optional prefix for the cache key"
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Retrieve PLT Cache
+      id: plt_cache
+      uses: actions/cache@v1
+      with:
+        path: ${{ inputs.working-directory }}/${{ inputs.plt-path }}
+        key: ${{ inputs.cache-prefix }}-plt-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+      if: ${{ inputs.use-cache == 'true' }}
+    - name: Create PLTs
+      run: |
+        mkdir -p ${{ inputs.plt-path }}
+        mix dialyzer --plt
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+      if: steps.plt_cache.outputs.cache-hit != 'true'

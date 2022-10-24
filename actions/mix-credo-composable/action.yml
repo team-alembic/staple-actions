@@ -1,0 +1,20 @@
+name: mix credo --strict
+description: "Runs `mix credo --strict`"
+inputs:
+  mix-env:
+    description: "The Mix environment to compile within"
+    required: true
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+runs:
+  using: "composite"
+  steps:
+    - run: mix credo --strict
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"

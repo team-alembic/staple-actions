@@ -8,7 +8,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: team-alembic/staple-actions/actions/tool-versions@main
+    - uses: team-alembic/staple-actions/actions/tool-versions@separate_composite_actions
       id: tool-versions
       with:
         working-directory: "${{ inputs.working-directory }}"
