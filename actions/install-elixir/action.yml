@@ -8,14 +8,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: team-alembic/staple-actions/actions/tool-versions@main
-      id: tool-versions
-      with:
-        working-directory: "${{ inputs.working-directory }}"
+    - id: erlang
+      run: echo "erlang_version=$(grep erlang .tool-versions | cut -d ' ' -f 2)" >> $GITHUB_OUTPUT
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+    - id: elixir
+      run: echo "elixir_version=$(grep elixir .tool-versions | cut -d ' ' -f 2)" >> $GITHUB_OUTPUT
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
     - uses: erlef/setup-beam@v1
       with:
-        otp-version: ${{ steps.tool-versions.outputs.erlang }}
-        elixir-version: ${{ steps.tool-versions.outputs.elixir }}
+        otp-version: ${{ steps.erlang.outputs.erlang_version }}
+        elixir-version: ${{ steps.elixir.outputs.elixir_version }}
       env:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
