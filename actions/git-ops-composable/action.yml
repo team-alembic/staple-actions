@@ -23,6 +23,10 @@ inputs:
     description: "The Mix environment to compile within"
     required: false
     default: "dev"
+  no-major:
+    description: "Inhibit major version number changes"
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -42,6 +46,15 @@ runs:
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.release --yes || true
+      if: ${{ inputs.no-major != "true" }}
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+    - run: mix git_ops.release --yes --no-major || true
+      if: ${{ inputs.no-major == "true" }}
       env:
         MIX_ENV: ${{ inputs.mix-env }}
         HEX_HOME: ${{ runner.temp }}/.hex
