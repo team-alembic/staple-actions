@@ -1,0 +1,52 @@
+name: mix hex.publish
+description: "Build and publish a hex package (with cache)"
+inputs:
+  mix-env:
+    description: "The mix environment to use"
+    required: true
+  git-token:
+    required: false
+    default: ${{ github.token }}
+    description: "A Github access token for checking out git-based dependencies."
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+  use-cache:
+    description: "Use caches?"
+    required: false
+    default: "true"
+  cache-prefix:
+    description: "Optional prefix for the cache key"
+    required: false
+    default: ""
+  hex-api-key:
+    description: "The API key used to publish the hex package"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: team-alembic/staple-actions/actions/mix-compile@main
+      with:
+        git-token: ${{ inputs.git-token }}
+        working-directory: ${{ inputs.working-directory }}
+        use-cache: ${{ inputs.use-cache }}
+        cache-prefix: ${{ inputs.cache-prefix }}
+        mix-env: ${{ inputs.mix-env }}
+    - name: Build package
+      run: mix hex.build
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Publish package
+      run: mix hex.publish --yes
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+        HEX_API_KEY: ${{ inputs.hex-api-key }}
+      working-directory: "${{ inputs.working-directory }}"

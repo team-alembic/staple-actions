@@ -1,0 +1,33 @@
+name: mix hex.publish
+description: "Build and publish a hex package (with cache)"
+inputs:
+  mix-env:
+    description: "The mix environment to use"
+    required: true
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+  hex-api-key:
+    description: "The API key used to publish the hex package"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Build package
+      run: mix hex.build
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Publish package
+      run: mix hex.publish --yes
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+        HEX_API_KEY: ${{ inputs.hex-api-key }}
+      working-directory: "${{ inputs.working-directory }}"
