@@ -65,7 +65,7 @@ runs:
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.release --yes || true
-      if: ${{ inputs.no-major != "true" }}
+      if: ${{ inputs.no-major != 'true' }}
       env:
         MIX_ENV: ${{ inputs.mix-env }}
         HEX_HOME: ${{ runner.temp }}/.hex
@@ -73,7 +73,7 @@ runs:
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - run: mix git_ops.release --yes --no-major || true
-      if: ${{ inputs.no-major == "true" }}
+      if: ${{ inputs.no-major == 'true' }}
       env:
         MIX_ENV: ${{ inputs.mix-env }}
         HEX_HOME: ${{ runner.temp }}/.hex
