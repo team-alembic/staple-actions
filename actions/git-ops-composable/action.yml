@@ -27,6 +27,10 @@ inputs:
     description: "Inhibit major version number changes"
     required: false
     default: "false"
+  release-token:
+    description: "The Github access token for creating a release (hint: using the actions token won't trigger other workflows)"
+    required: false
+    default: ${{ github.token }}
 runs:
   using: "composite"
   steps:
@@ -80,7 +84,7 @@ runs:
       id: create-release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ inputs.release-token }}
       with:
         tag_name: ${{ inputs.version-tag-prefix }}${{ steps.new-app-info.outputs.app_version }}
         release_name: Release ${{ steps.new-app-info.outputs.app_name }} ${{ steps.new-app-info.outputs.app_version }}
