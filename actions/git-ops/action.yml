@@ -109,10 +109,9 @@ runs:
     - name: Creating new Github release
       if: ${{ steps.original-app-info.outputs.app_version != steps.new-app-info.outputs.app_version }}
       id: create-release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.release-token }}
+      uses: softprops/action-gh-release@v1
       with:
+        token: ${{ inputs.release-token }}
         tag_name: ${{ inputs.version-tag-prefix }}${{ steps.new-app-info.outputs.app_version }}
-        release_name: ${{ steps.git-tag-message.subject }}
+        name: ${{ steps.git-tag-message.subject }}
         body: ${{ steps.git-tag-message.body }}
