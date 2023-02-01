@@ -1,5 +1,5 @@
 name: mix ${{inputs.task}}
-description: "Runs `mix <task>`"
+description: "Runs a mix task"
 inputs:
   mix-env:
     description: "The Mix environment to compile within"

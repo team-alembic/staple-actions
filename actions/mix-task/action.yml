@@ -1,4 +1,4 @@
-name: mix ${{inputs.name}}
+name: Run a mix task
 description: "Runs `mix <task>`"
 inputs:
   git-token:
@@ -38,7 +38,7 @@ runs:
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
         mix-env: ${{ inputs.mix-env }}
-    - run: mix ${{task}}
+    - run: mix ${{inputs.task}}
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
