@@ -14,7 +14,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: mix ${{task}}
+    - run: mix ${{inputs.task}}
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
