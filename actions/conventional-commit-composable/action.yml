@@ -1,0 +1,23 @@
+name: mix git_ops.check_message
+description: "Runs `mix git_ops.check_message`"
+inputs:
+  mix-env:
+    description: "The Mix environment to compile within"
+    required: true
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+runs:
+  using: "composite"
+  steps:
+    - run: git log -1 --format=%s > .last_commit_message
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+    - run: mix git_ops.check_message .last_commit_message
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
