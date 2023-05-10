@@ -1,25 +1,12 @@
 name: Install Elixir and Erlang
 description: "Install Erlang and Elixir as per the `.tool-versions` file."
-inputs:
-  working-directory:
-    description: "Change the working directory that the commands are run within"
-    required: false
-    default: "${{ github.workspace }}"
 runs:
   using: "composite"
   steps:
-    - id: erlang
-      run: echo "erlang_version=$(grep erlang .tool-versions | cut -d ' ' -f 2)" >> $GITHUB_OUTPUT
-      shell: bash
-      working-directory: "${{ inputs.working-directory }}"
-    - id: elixir
-      run: echo "elixir_version=$(grep elixir .tool-versions | cut -d ' ' -f 2)" >> $GITHUB_OUTPUT
-      shell: bash
-      working-directory: "${{ inputs.working-directory }}"
     - uses: erlef/setup-beam@v1
       with:
-        otp-version: ${{ steps.erlang.outputs.erlang_version }}
-        elixir-version: ${{ steps.elixir.outputs.elixir_version }}
+        version-file: .tool-versions
+        version-type: strict
       env:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix

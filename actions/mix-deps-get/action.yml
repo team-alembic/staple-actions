@@ -22,8 +22,6 @@ runs:
   steps:
     - name: Install Erlang and Elixir
       uses: team-alembic/staple-actions/actions/install-elixir@main
-      with:
-        working-directory: "${{ inputs.working-directory }}"
     - name: Retrieve Mix Dependencies Cache
       uses: actions/cache@v1
       with:
