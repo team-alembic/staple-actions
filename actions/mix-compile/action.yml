@@ -30,7 +30,7 @@ runs:
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
     - name: Retrieve Build Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       id: build-cache
       with:
         path: ${{ inputs.working-directory }}/_build

@@ -23,7 +23,7 @@ runs:
     - name: Install Erlang and Elixir
       uses: team-alembic/staple-actions/actions/install-elixir@main
     - name: Retrieve Mix Dependencies Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ inputs.working-directory }}/deps
         key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
@@ -31,19 +31,19 @@ runs:
           ${{ inputs.cache-prefix }}-deps
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve MIX_HOME Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ runner.temp }}/.mix
         key: ${{ inputs.cache-prefix }}-mix-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve HEX_HOME Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve Mix Dependencies Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ inputs.working-directory }}/deps
         key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
