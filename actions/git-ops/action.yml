@@ -39,6 +39,10 @@ inputs:
     description: "Inhibit major version number changes"
     required: false
     default: "false"
+  release-actor:
+    description: "The actor to use for creating and pushing a release. This actor should own the `release_token`."
+    required: false
+    default: ${{ github.actor }}
   release-token:
     description: "The Github access token for creating a release (hint: using the actions token won't trigger other workflows)"
     required: false
@@ -95,7 +99,7 @@ runs:
       working-directory: "${{ inputs.working-directory }}"
     - name: Pushing new tag
       if: ${{ steps.original-app-info.outputs.app_version != steps.new-app-info.outputs.app_version }}
-      run: git push "https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}" HEAD:${{ github.ref }} refs/tags/v${{ steps.new-app-info.outputs.app_version }}
+      run: git push "https://${{ inputs.release-actor }}:${{ inputs.release-token }}@github.com/${{ github.repository }}" HEAD:${{ github.ref }} refs/tags/v${{ steps.new-app-info.outputs.app_version }}
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - name: Getting release message
