@@ -1,0 +1,53 @@
+name: mix deps.get
+description: "Download and install the hex dependencies (with cache)"
+inputs:
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+  use-cache:
+    description: "Use caches?"
+    required: false
+    default: "true"
+  cache-prefix:
+    description: "Optional prefix for the cache key"
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Retrieve Mix Dependencies Cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.working-directory }}/deps
+        key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-deps
+      if: ${{ inputs.use-cache == 'true' }}
+    - name: Retrieve MIX_HOME Cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ runner.temp }}/.mix
+        key: ${{ inputs.cache-prefix }}-mix-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+      if: ${{ inputs.use-cache == 'true' }}
+    - name: Retrieve HEX_HOME Cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ runner.temp }}/.hex
+        key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+      if: ${{ inputs.use-cache == 'true' }}
+    - name: Retrieve Mix Dependencies Cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.working-directory }}/deps
+        key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-deps
+      if: ${{ inputs.use-cache == 'true' }}
+    - name: Install Mix Dependencies
+      shell: bash
+      run: mix deps.get
+      env:
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
