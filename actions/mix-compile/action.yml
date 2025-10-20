@@ -20,6 +20,10 @@ inputs:
     description: "Optional prefix for the cache key"
     required: false
     default: ""
+  args:
+    description: "Additional CLI arguments to pass to mix compile"
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -43,7 +47,7 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
-    - run: mix compile
+    - run: mix compile ${{ inputs.args }}
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
