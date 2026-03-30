@@ -35,12 +35,16 @@ runs:
       with:
         path: ${{ runner.temp }}/.mix
         key: ${{ inputs.cache-prefix }}-mix-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-mix-home-
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve HEX_HOME Cache
       uses: actions/cache@v3
       with:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-hex-home-
       if: ${{ inputs.use-cache == 'true' }}
     - name: Configure git access (HTTPS)
       run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
