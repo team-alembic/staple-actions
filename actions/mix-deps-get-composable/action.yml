@@ -48,6 +48,20 @@ runs:
       run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "git@github.com:"
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
+    - name: Install Hex
+      shell: bash
+      run: mix local.hex --if-missing --force
+      env:
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Install Rebar
+      shell: bash
+      run: mix local.rebar --if-missing --force
+      env:
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
     - name: Install Mix Dependencies
       shell: bash
       run: mix deps.get
