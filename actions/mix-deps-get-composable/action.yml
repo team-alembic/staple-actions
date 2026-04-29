@@ -1,6 +1,10 @@
 name: mix deps.get
 description: "Download and install the hex dependencies (with cache)"
 inputs:
+  git-token:
+    required: false
+    default: ${{ github.token }}
+    description: "A Github access token for checking out git-based dependencies."
   working-directory:
     description: "Change the working directory that the commands are run within"
     required: false
@@ -36,14 +40,28 @@ runs:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
-    - name: Retrieve Mix Dependencies Cache
-      uses: actions/cache@v3
-      with:
-        path: ${{ inputs.working-directory }}/deps
-        key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-        restore-keys: |
-          ${{ inputs.cache-prefix }}-deps
-      if: ${{ inputs.use-cache == 'true' }}
+    - name: Configure git access (HTTPS)
+      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Configure git access (SSH)
+      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "git@github.com:"
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Install Hex
+      shell: bash
+      run: mix local.hex --if-missing --force
+      env:
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
+    - name: Install Rebar
+      shell: bash
+      run: mix local.rebar --if-missing --force
+      env:
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
     - name: Install Mix Dependencies
       shell: bash
       run: mix deps.get
