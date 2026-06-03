@@ -36,8 +36,9 @@ Setup & dependency management:
 
 - `install-elixir` — installs Erlang + Elixir per `.tool-versions` via
   [`erlef/setup-beam`](https://github.com/erlef/setup-beam).
-- `mix-deps-get` / `mix-deps-get-composable` — fetch Hex deps with a
-  `mix.lock`-keyed cache.
+- `mix-deps-get` / `mix-deps-get-composable` — fetch Hex deps, caching the
+  `HEX_HOME`/`MIX_HOME` tarball stores (keyed on `mix.lock`) to keep the fetch
+  fast.
 - `mix-deps-unlock` / `-composable` — `mix deps.unlock --check-unused`.
 - `mix-hex-audit` / `-composable` — `mix hex.audit`.
 

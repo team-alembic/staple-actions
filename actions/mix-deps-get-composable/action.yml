@@ -20,12 +20,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Retrieve Mix Dependencies Cache
-      uses: actions/cache@v3
-      with:
-        path: ${{ inputs.working-directory }}/deps
-        key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-      if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve MIX_HOME Cache
       uses: actions/cache@v3
       with:
