@@ -50,7 +50,7 @@ Compile & quality checks:
 - `mix-doctor` / `-composable` — `mix doctor --full --raise`.
 - `mix-check` / `-composable` — `mix check` (runs an aggregated check
   pipeline).
-- `mix-sobelow` / `-composable` — `mix sobelow --config`.
+- `mix-sobelow` / `-composable` — `mix sobelow --config --exit`.
 - `mix-dialyzer` / `-composable` — `mix dialyzer` with PLT caching.
 - `mix-dialyzer-plt` / `-composable` — build only the Dialyzer PLT.
 

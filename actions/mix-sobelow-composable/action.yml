@@ -1,5 +1,5 @@
 name: mix sobelow --config
-description: "Runs `mix sobelow --config`"
+description: "Runs `mix sobelow --config --exit`"
 inputs:
   mix-env:
     description: "The Mix environment to compile within"
@@ -11,7 +11,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: mix sobelow --config
+    - run: mix sobelow --config --exit
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}

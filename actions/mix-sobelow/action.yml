@@ -1,5 +1,5 @@
 name: mix sobelow --config
-description: "Runs `mix sobelow --config`"
+description: "Runs `mix sobelow --config --exit`"
 inputs:
   git-token:
     required: false
@@ -30,7 +30,7 @@ runs:
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
         mix-env: ${{ inputs.mix-env }}
-    - run: mix sobelow --config
+    - run: mix sobelow --config --exit
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
