@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-deps-get@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-deps-get@main
 
   auditor:
     name: mix hex.audit
@@ -17,7 +17,7 @@ jobs:
     needs: deps
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-hex-audit@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-audit@main
 
   build-test:
     name: MIX_ENV=test mix.compile
@@ -25,7 +25,7 @@ jobs:
     needs: deps
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-compile@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-compile@main
         with:
           mix-env: test
 
@@ -35,7 +35,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-format@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-format@main
         with:
           mix-env: test
 
@@ -45,7 +45,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-credo@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-credo@main
         with:
           mix-env: test
 
@@ -55,7 +55,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-doctor@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-doctor@main
         with:
           mix-env: test
 
@@ -79,7 +79,7 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-test@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-test@main
         with:
           mix-env: test
         env:
@@ -93,7 +93,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-dialyzer@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-dialyzer@main
         with:
           mix-env: test
 
@@ -110,7 +110,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-compile@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-compile@main
         with:
           mix-env: dev
 
@@ -120,7 +120,7 @@ jobs:
     needs: build-dev
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/mix-docs@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/mix-docs@main
         with:
           mix-env: dev
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
@@ -152,7 +152,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
-      - uses: team-alembic/staple-actions/actions/git-ops@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/git-ops@main
         with:
           mix-env: test
 
@@ -172,7 +172,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: team-alembic/staple-actions/actions/gigalixir-deploy@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      - uses: team-alembic/staple-actions/actions/gigalixir-deploy@main
         with:
           gigalixir-email: ${{ secrets.GIGALIXIR_EMAIL }}
           gigalixir-password: ${{ secrets.GIGALIXIR_PASSWORD }}

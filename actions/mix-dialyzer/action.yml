@@ -27,7 +27,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: team-alembic/staple-actions/actions/mix-dialyzer-plt@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+    - uses: team-alembic/staple-actions/actions/mix-dialyzer-plt@main
       with:
         git-token: ${{ inputs.git-token }}
         working-directory: ${{ inputs.working-directory }}

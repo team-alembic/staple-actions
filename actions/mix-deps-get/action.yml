@@ -21,7 +21,7 @@ runs:
   using: "composite"
   steps:
     - name: Install Erlang and Elixir
-      uses: team-alembic/staple-actions/actions/install-elixir@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
+      uses: team-alembic/staple-actions/actions/install-elixir@main
     - name: Retrieve MIX_HOME Cache
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
