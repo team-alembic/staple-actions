@@ -3,7 +3,7 @@ description: "Install Erlang and Elixir as per the `.tool-versions` file."
 runs:
   using: "composite"
   steps:
-    - uses: erlef/setup-beam@v1
+    - uses: erlef/setup-beam@fc68ffb90438ef2936bbb3251622353b3dcb2f93 # v1
       with:
         version-file: .tool-versions
         version-type: strict
