@@ -21,9 +21,9 @@ runs:
   using: "composite"
   steps:
     - name: Install Erlang and Elixir
-      uses: team-alembic/staple-actions/actions/install-elixir@main
+      uses: team-alembic/staple-actions/actions/install-elixir@20646fb36ffd4d4e231d4594b1e63b8b0ea60e45 # main
     - name: Retrieve MIX_HOME Cache
-      uses: actions/cache@v3
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
         path: ${{ runner.temp }}/.mix
         key: ${{ inputs.cache-prefix }}-mix-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
@@ -31,7 +31,7 @@ runs:
           ${{ inputs.cache-prefix }}-mix-home-
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve HEX_HOME Cache
-      uses: actions/cache@v3
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
