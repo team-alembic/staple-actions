@@ -45,6 +45,12 @@ Setup & dependency management:
 Compile & quality checks:
 
 - `mix-compile` / `-composable` — `mix compile` with a `_build` cache.
+- `mix-deps-compile` / `-composable` — `mix deps.compile` with a `_build`
+  cache. Compiles only the dependencies, leaving the project itself to a later
+  step. Shares the same `_build` cache key as `mix-compile`, so the two are
+  interchangeable at the cache layer. Use this when the project is compiled by
+  a downstream tool (e.g. `mix check`'s own compiler) and you only want to
+  cache the expensive dependency build.
 - `mix-format` / `-composable` — `mix format --check-formatted`.
 - `mix-credo` / `-composable` — `mix credo --strict`.
 - `mix-doctor` / `-composable` — `mix doctor --full --raise`.
