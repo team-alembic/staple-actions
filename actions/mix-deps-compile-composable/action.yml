@@ -24,7 +24,7 @@ runs:
   using: "composite"
   steps:
     - name: Retrieve Build Cache
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       id: build-cache
       with:
         path: ${{ inputs.working-directory }}/_build
@@ -37,3 +37,14 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
+    # Save _build inline (not in a post step) so it persists even when a later
+    # pipeline step — tests, lint — fails: the compiled deps are valid
+    # regardless. The implied success() on this `if` still skips the save if
+    # deps.compile itself failed, so we never cache a broken build. Only saves
+    # on a miss to avoid redundant writes.
+    - name: Save Build Cache
+      uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      with:
+        path: ${{ inputs.working-directory }}/_build
+        key: ${{ inputs.cache-prefix}}-build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+      if: ${{ inputs.use-cache == 'true' && steps.build-cache.outputs.cache-hit != 'true' }}

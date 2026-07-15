@@ -39,7 +39,8 @@ runs:
     # (before deps.get) keeps mtimes stable so downstream compilation is a
     # genuine no-op on a cache hit.
     - name: Retrieve deps Cache
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      id: deps-cache
+      uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
         path: ${{ inputs.working-directory }}/deps
         key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
@@ -73,3 +74,14 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
+    # Save deps/ inline (not in a post step) so it persists even when a later
+    # pipeline step — tests, lint — fails: the fetched sources are valid
+    # regardless. The implied success() on this `if` still skips the save if
+    # deps.get itself failed, so we never cache a broken fetch. Only saves on a
+    # miss to avoid redundant writes.
+    - name: Save deps Cache
+      uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      with:
+        path: ${{ inputs.working-directory }}/deps
+        key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+      if: ${{ inputs.use-cache == 'true' && steps.deps-cache.outputs.cache-hit != 'true' }}
