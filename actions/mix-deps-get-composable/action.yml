@@ -32,6 +32,18 @@ runs:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
+    # Cache the extracted `deps/` sources, not just the tarball stores above.
+    # Without this, `mix deps.get` re-extracts every dep on each run with fresh
+    # mtimes, which makes a later `mix compile` / `mix deps.compile` treat the
+    # cached _build artifacts as stale and recompile them. Restoring deps/ here
+    # (before deps.get) keeps mtimes stable so downstream compilation is a
+    # genuine no-op on a cache hit.
+    - name: Retrieve deps Cache
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      with:
+        path: ${{ inputs.working-directory }}/deps
+        key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
+      if: ${{ inputs.use-cache == 'true' }}
     - name: Configure git access (HTTPS)
       run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       shell: bash
