@@ -27,11 +27,19 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # The build cache carries deps/ alongside _build so that a git dep which
+    # builds a NIF into its Mix-symlinked priv dir (e.g. exla) — where the
+    # built `.so` lands inside deps/, not _build — has that artifact cached
+    # with the rest of the compiled output. mix-deps-get still restores its own
+    # mix.lock-keyed deps/ source cache before deps.get; extracting that over
+    # this deps/ leaves the `.so` in place. See issue #23.
     - name: Retrieve Build Cache
       uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       id: build-cache
       with:
-        path: ${{ inputs.working-directory }}/_build
+        path: |
+          ${{ inputs.working-directory }}/_build
+          ${{ inputs.working-directory }}/deps
         key: ${{ inputs.cache-prefix}}-build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - uses: team-alembic/staple-actions/actions/mix-deps-get@main
@@ -47,14 +55,16 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
-    # Save _build inline (not in a post step) so it persists even when a later
-    # pipeline step — tests, lint — fails: the compiled deps are valid
-    # regardless. The implied success() on this `if` still skips the save if
-    # deps.compile itself failed, so we never cache a broken build. Only saves
-    # on a miss to avoid redundant writes.
+    # Save _build (and deps/, for the NIF artifacts noted above) inline (not in
+    # a post step) so it persists even when a later pipeline step — tests, lint
+    # — fails: the compiled deps are valid regardless. The implied success() on
+    # this `if` still skips the save if deps.compile itself failed, so we never
+    # cache a broken build. Only saves on a miss to avoid redundant writes.
     - name: Save Build Cache
       uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
-        path: ${{ inputs.working-directory }}/_build
+        path: |
+          ${{ inputs.working-directory }}/_build
+          ${{ inputs.working-directory }}/deps
         key: ${{ inputs.cache-prefix}}-build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/.tool-versions')) }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' && steps.build-cache.outputs.cache-hit != 'true' }}
