@@ -41,19 +41,24 @@ Setup & dependency management:
   (all keyed on `mix.lock`) to keep the fetch fast. Caching `deps/` — not just
   the tarball stores — keeps dependency mtimes stable across runs, so a later
   `mix compile` / `mix deps.compile` doesn't treat cache-restored `_build`
-  artifacts as stale and recompile them.
+  artifacts as stale and recompile them. This cache holds only fetched sources;
+  build artifacts a dep writes into `deps/` (e.g. a git dep that compiles a NIF
+  into its Mix-symlinked `priv`) are carried by the build cache below instead.
 - `mix-deps-unlock` / `-composable` — `mix deps.unlock --check-unused`.
 - `mix-hex-audit` / `-composable` — `mix hex.audit`.
 
 Compile & quality checks:
 
-- `mix-compile` / `-composable` — `mix compile` with a `_build` cache.
-- `mix-deps-compile` / `-composable` — `mix deps.compile` with a `_build`
-  cache. Compiles only the dependencies, leaving the project itself to a later
-  step. Shares the same `_build` cache key as `mix-compile`, so the two are
-  interchangeable at the cache layer. Use this when the project is compiled by
-  a downstream tool (e.g. `mix check`'s own compiler) and you only want to
-  cache the expensive dependency build.
+- `mix-compile` / `-composable` — `mix compile` with a build cache covering
+  `_build` and `deps/` (the latter so NIF artifacts a dep builds into its
+  `priv` are cached — see `mix-deps-get` above), keyed on `runner.os` /
+  `runner.arch` / `.tool-versions` / `mix.lock`.
+- `mix-deps-compile` / `-composable` — `mix deps.compile` with a build cache.
+  Compiles only the dependencies, leaving the project itself to a later step.
+  Shares the same build cache (`_build` + `deps/`) and key as `mix-compile`, so
+  the two are interchangeable at the cache layer. Use this when the project is
+  compiled by a downstream tool (e.g. `mix check`'s own compiler) and you only
+  want to cache the expensive dependency build.
 - `mix-format` / `-composable` — `mix format --check-formatted`.
 - `mix-credo` / `-composable` — `mix credo --strict`.
 - `mix-doctor` / `-composable` — `mix doctor --full --raise`.
