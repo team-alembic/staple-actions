@@ -52,11 +52,11 @@ runs:
         key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - name: Configure git access (HTTPS)
-      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      run: git config --global url."https://x-access-token:${{ inputs.git-token }}@github.com/".insteadOf "https://github.com/"
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - name: Configure git access (SSH)
-      run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "git@github.com:"
+      run: git config --global url."https://x-access-token:${{ inputs.git-token }}@github.com/".insteadOf "git@github.com:"
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
     - name: Install Hex
