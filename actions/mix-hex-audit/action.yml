@@ -26,9 +26,40 @@ runs:
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
-    - run: mix hex.audit
+    - id: code-scanning
+      run: |
+        # The security_and_analysis field of the repository API needs admin
+        # access, so probe the code scanning API instead. 404 means that no
+        # analysis exists yet, which still means that code scanning is available.
+        status=$(curl -s -o /dev/null -w '%{http_code}' \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/code-scanning/analyses?per_page=1")
+        if [ "$status" = "200" ] || [ "$status" = "404" ]; then
+          echo "available=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::warning title=mix hex.audit::GitHub code scanning is not available (HTTP $status). The audit result is not uploaded as SARIF, and the job fails if the audit finds issues. Code scanning needs GitHub Advanced Security on private repositories and the security-events: write permission."
+          echo "available=false" >> "$GITHUB_OUTPUT"
+        fi
       shell: bash
       env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - id: audit
+      continue-on-error: ${{ steps.code-scanning.outputs.available == 'true' }}
+      run: |
+        if [ "$SARIF_AVAILABLE" = "true" ]; then
+          mix hex.audit --format sarif --output "$RUNNER_TEMP/hex-audit.sarif"
+        else
+          mix hex.audit
+        fi
+      shell: bash
+      env:
+        SARIF_AVAILABLE: ${{ steps.code-scanning.outputs.available }}
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
+    - if: ${{ always() && steps.code-scanning.outputs.available == 'true' && steps.audit.outcome != 'skipped' }}
+      uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+      with:
+        sarif_file: ${{ runner.temp }}/hex-audit.sarif
+        category: hex-audit
